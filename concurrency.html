@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>goroutines and channels · go learning</title>
+<meta name="description" content="Lesson 8: goroutines, channels (buffered and unbuffered), select and sync.WaitGroup, with a channel simulator.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <button type="button" class="watr-burger" data-watr-shell="shell" aria-controls="side" aria-label="lessons"></button>
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+
+<div class="watr-shell" id="shell">
+    <aside class="watr-side" id="side" aria-label="lessons">
+        <div class="watr-side__inner">
+            <div>
+                <h2 class="watr-side__label">lessons</h2>
+                <nav class="watr-side__nav" data-lesson-nav></nav>
+            </div>
+            <div data-side-extra>
+                <h2 class="watr-side__label">practice</h2>
+                <nav class="watr-side__nav">
+                    <a href="quiz.html">final quiz</a>
+                    <a href="cheatsheet.html">cheat sheet</a>
+                </nav>
+            </div>
+            <div class="watr-side__foot">
+                <div>
+                    <div class="side-meter"><b>lessons done</b><span class="muted" data-progress-text>0 of 8</span></div>
+                    <progress class="watr-progress" data-progress value="0" max="8" aria-label="lessons done"></progress>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="watr-shell__main">
+    <div class="page">
+<ol class="watr-crumbs">
+    <li><a href="index.html">lessons</a></li>
+    <li aria-current="page">8. goroutines and channels</li>
+</ol>
+
+<h1>Goroutines and channels</h1>
+<p class="lede">This is the part Go is famous for. Starting concurrent work is one keyword, and goroutines talk to each other through channels.</p>
+
+<section id="goroutines">
+    <h2>Goroutines</h2>
+    <p>Put <code>go</code> in front of a function call and it runs in a new <b>goroutine</b>, alongside everything else. The line returns immediately. Goroutines are cheap: a few kilobytes each, so running thousands is normal.</p>
+    <p>The catch: you don't control the order they run in, and when <code>main</code> returns, the program ends whether they're done or not. <code>sync.WaitGroup</code> waits for them.</p>
+    <pre class="go">
+        var wg sync.WaitGroup
+        for _, name := range []string{"ana", "bo", "cy"} {
+            wg.Add(1)
+            go func() {
+                defer wg.Done()
+                work(name)
+                fmt.Println(name, "finished")
+            }()
+        }
+        wg.Wait()   // blocks until every Done has been called
+        fmt.Println("all done")
+    </pre>
+
+    <div class="toy" id="wg-toy">
+        <div class="toy__head">three goroutines</div>
+        <div class="toy__body">
+            <div class="toy__controls">
+                <button type="button" class="watr-btn watr-btn--small" data-act="run">Run it</button>
+                <label class="watr-switch"><input type="checkbox" role="switch" data-slot="nowait"> forget wg.Wait()</label>
+            </div>
+            <div class="workers" data-slot="workers"></div>
+            <pre class="out" data-slot="out"></pre>
+            <p class="toy__note" aria-live="polite" data-slot="note">Run it a few times. The finishing order changes.</p>
+        </div>
+    </div>
+</section>
+
+<section id="channels">
+    <h2>Channels</h2>
+    <p>A channel is a pipe with a type. One goroutine sends a value in, another receives it.</p>
+    <pre class="go">
+        ch := make(chan int)      // unbuffered
+        go func() { ch &lt;- 42 }()  // send
+        v := &lt;-ch                 // receive. waits until a value arrives
+    </pre>
+    <p>The important part is <b>when they wait</b>. On an unbuffered channel a send waits until someone receives, so the two goroutines meet. A buffered channel has room for a few values, and senders only wait when it's full. Each button press below is a new goroutine.</p>
+
+    <div class="toy" id="chan-toy">
+        <div class="toy__head">channel simulator <span class="watr-tag" data-slot="decl">make(chan int)</span></div>
+        <div class="toy__body">
+            <div class="toy__controls">
+                <label for="chan-cap">buffer size</label>
+                <select id="chan-cap">
+                    <option value="0">0 (unbuffered)</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                </select>
+                <button type="button" class="watr-btn watr-btn--small" data-act="send" style="font-family:var(--mono)">go send: ch &lt;- n</button>
+                <button type="button" class="watr-btn watr-btn--small" data-act="recv" style="font-family:var(--mono)">go receive: &lt;-ch</button>
+                <button type="button" class="watr-btn watr-btn--small watr-btn--quiet" data-act="reset">Reset</button>
+            </div>
+            <div class="pipe">
+                <div class="pipe__side">
+                    <b>waiting to send</b>
+                    <div class="pipe__queue" data-slot="senders"></div>
+                </div>
+                <div class="pipe__mid">
+                    <b>buffer</b>
+                    <div class="cells pipe__buffer" data-slot="buffer"></div>
+                </div>
+                <div class="pipe__side">
+                    <b>waiting to receive</b>
+                    <div class="pipe__queue" data-slot="receivers"></div>
+                </div>
+            </div>
+            <pre class="out" data-slot="out"></pre>
+            <p class="toy__note" aria-live="polite" data-slot="note">Send a few values and see where they go.</p>
+        </div>
+    </div>
+
+    <p>When you're done sending, <code>close(ch)</code>. Receivers can then loop with <code>for v := range ch</code>, which stops after the last value. Only the sender should close a channel, and sending on a closed one panics.</p>
+    <div class="tip">
+        <p><b>deadlock:</b> If every goroutine is stuck waiting on a channel, Go stops the program with <code>fatal error: all goroutines are asleep - deadlock!</code>. The classic way to get it: send on an unbuffered channel in <code>main</code> with nobody to receive.</p>
+    </div>
+</section>
+
+<section id="select">
+    <h2>select</h2>
+    <p><code>select</code> waits on several channel operations at once and runs whichever is ready first. It's how you add timeouts:</p>
+    <pre class="go">
+        select {
+        case msg := &lt;-messages:
+            fmt.Println("got", msg)
+        case &lt;-time.After(2 * time.Second):
+            fmt.Println("gave up waiting")
+        }
+    </pre>
+    <p>Go's motto for all this: <b>don't communicate by sharing memory; share memory by communicating.</b> When goroutines must share a variable, protect it with a <code>sync.Mutex</code>, and run your tests with <code>go test -race</code> to catch mistakes.</p>
+</section>
+
+<section id="predict">
+    <h2>Predict the output</h2>
+    <div class="predict" data-answer="1 2 3" data-why=" The buffer holds all three sends without blocking, and channels are first in, first out.">
+        <pre class="go">
+            ch := make(chan int, 3)
+            ch &lt;- 1
+            ch &lt;- 2
+            ch &lt;- 3
+            close(ch)
+            for v := range ch {
+                fmt.Print(v, " ")
+            }
+        </pre>
+    </div>
+</section>
+
+<section id="quiz">
+    <h2>Check yourself</h2>
+    <p>Get 5 of 6 right to mark this lesson done.</p>
+    <div data-quiz="concurrency"></div>
+</section>
+
+<nav class="lesson-nav" data-lesson-steps aria-label="lessons"></nav>
+
+    </div>
+    </main>
+</div>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+<script src="js/toys/concurrency.js"></script>
+</body>
+</html>

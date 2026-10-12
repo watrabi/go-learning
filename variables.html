@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>variables and types · go learning</title>
+<meta name="description" content="Lesson 2: var, :=, zero values, constants and Go's basic types.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <button type="button" class="watr-burger" data-watr-shell="shell" aria-controls="side" aria-label="lessons"></button>
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+
+<div class="watr-shell" id="shell">
+    <aside class="watr-side" id="side" aria-label="lessons">
+        <div class="watr-side__inner">
+            <div>
+                <h2 class="watr-side__label">lessons</h2>
+                <nav class="watr-side__nav" data-lesson-nav></nav>
+            </div>
+            <div data-side-extra>
+                <h2 class="watr-side__label">practice</h2>
+                <nav class="watr-side__nav">
+                    <a href="quiz.html">final quiz</a>
+                    <a href="cheatsheet.html">cheat sheet</a>
+                </nav>
+            </div>
+            <div class="watr-side__foot">
+                <div>
+                    <div class="side-meter"><b>lessons done</b><span class="muted" data-progress-text>0 of 8</span></div>
+                    <progress class="watr-progress" data-progress value="0" max="8" aria-label="lessons done"></progress>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="watr-shell__main">
+    <div class="page">
+<ol class="watr-crumbs">
+    <li><a href="index.html">lessons</a></li>
+    <li aria-current="page">2. variables and types</li>
+</ol>
+
+<h1>Variables and types</h1>
+<p class="lede">Go is statically typed: every variable has one type, fixed when the program compiles. You usually don't have to write the type out, though. Go works it out.</p>
+
+<section id="declaring">
+    <h2>Three ways to declare</h2>
+    <pre class="go">
+        var age int = 30      // the long way: name, type, value
+        var name = "gopher"   // the type comes from the value
+        score := 100          // short form. only inside functions
+
+        var a, b int = 1, 2   // several at once
+        x, y := 10, "ten"     // different types are fine
+    </pre>
+    <p>Inside functions, almost everyone writes <code>:=</code>. You'll see <code>var</code> at package level (where <code>:=</code> isn't allowed) and when you want a variable to start at its zero value.</p>
+</section>
+
+<section id="zero">
+    <h2>Zero values</h2>
+    <p>A variable you don't give a value isn't garbage or undefined. It gets the <b>zero value</b> for its type. Pick a type to see what <code>var x</code> holds.</p>
+
+    <div class="toy" id="zero-toy">
+        <div class="toy__head">zero value explorer</div>
+        <div class="toy__body">
+            <div class="toy__controls" role="group" aria-label="types"></div>
+            <div class="toy__grid">
+                <div>
+                    <pre class="go" data-slot="code">var x int</pre>
+                </div>
+                <div class="watr-stack" style="gap:10px">
+                    <div class="cells" style="padding-top:18px"><span class="cell is-in" data-slot="cell"><small>x</small>0</span></div>
+                </div>
+            </div>
+            <p class="toy__note" aria-live="polite" data-slot="note"></p>
+        </div>
+    </div>
+
+    <p>This is why Go code rarely checks "was this set?". A counter that starts at 0 or a string that starts empty is usually exactly what you wanted.</p>
+</section>
+
+<section id="types">
+    <h2>The basic types</h2>
+    <div class="watr-table-wrap">
+        <table class="watr-table watr-table--compact watr-table--stack">
+            <thead><tr><th>type</th><th>holds</th><th>example</th></tr></thead>
+            <tbody>
+                <tr><td class="is-main"><code>int</code></td><td>whole numbers (64-bit on most machines)</td><td><code>42</code></td></tr>
+                <tr><td class="is-main"><code>float64</code></td><td>decimals</td><td><code>3.14</code></td></tr>
+                <tr><td class="is-main"><code>string</code></td><td>text, stored as UTF-8 bytes. can't be changed in place</td><td><code>"hi"</code></td></tr>
+                <tr><td class="is-main"><code>bool</code></td><td><code>true</code> or <code>false</code></td><td><code>true</code></td></tr>
+                <tr><td class="is-main"><code>rune</code></td><td>one Unicode character (an <code>int32</code>)</td><td><code>'g'</code></td></tr>
+                <tr><td class="is-main"><code>byte</code></td><td>one byte (a <code>uint8</code>)</td><td><code>'A'</code></td></tr>
+                <tr><td class="is-main"><code>int8</code> … <code>uint64</code></td><td>sized and unsigned integers, when you need them</td><td><code>uint8(255)</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section id="inference">
+    <h2>What type did I get?</h2>
+    <p>With <code>:=</code> the type comes from the right-hand side. Type an expression (or pick one) and see what Go would make of it.</p>
+
+    <div class="toy" id="infer-toy">
+        <div class="toy__head">type inference</div>
+        <div class="toy__body">
+            <form class="watr-row" style="flex-wrap:wrap">
+                <code style="font-weight:700">x :=</code>
+                <input name="expr" value="7 / 2" aria-label="expression" spellcheck="false" autocomplete="off" style="flex:1;min-width:10rem;font-family:var(--mono)">
+                <button class="watr-btn">Check</button>
+            </form>
+            <div class="toy__controls" data-slot="presets"></div>
+            <dl class="var-table" data-slot="result"></dl>
+            <p class="toy__note" aria-live="polite" data-slot="note"></p>
+        </div>
+    </div>
+
+    <div class="tip">
+        <p><b>no surprise conversions:</b> Go never converts between types for you. <code>var f float64 = n</code> fails if <code>n</code> is an <code>int</code>. Write <code>float64(n)</code>. It feels strict at first, and it removes a whole category of bugs.</p>
+    </div>
+</section>
+
+<section id="constants">
+    <h2>Constants</h2>
+    <pre class="go">
+        const Pi = 3.14159
+        const greeting = "hello"
+
+        const (
+            Small = iota  // 0
+            Medium        // 1
+            Large         // 2
+        )
+    </pre>
+    <p>Constants are fixed when the program compiles. <code>iota</code> counts up inside a <code>const</code> block, which is Go's way of doing enums.</p>
+</section>
+
+<section id="predict">
+    <h2>Predict the output</h2>
+    <div class="predict" data-answer="3 3.5" data-why=" Dividing two ints throws the remainder away. Convert first to keep it.">
+        <pre class="go">
+            a, b := 7, 2
+            fmt.Println(a/b, float64(a)/float64(b))
+        </pre>
+    </div>
+</section>
+
+<section id="quiz">
+    <h2>Check yourself</h2>
+    <p>Get 5 of 6 right to mark this lesson done.</p>
+    <div data-quiz="variables"></div>
+</section>
+
+<nav class="lesson-nav" data-lesson-steps aria-label="lessons"></nav>
+
+    </div>
+    </main>
+</div>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+<script src="js/toys/variables.js"></script>
+</body>
+</html>

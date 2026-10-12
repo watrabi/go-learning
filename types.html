@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>structs and interfaces · go learning</title>
+<meta name="description" content="Lesson 7: structs, methods, value and pointer receivers, embedding, and implicit interfaces.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <button type="button" class="watr-burger" data-watr-shell="shell" aria-controls="side" aria-label="lessons"></button>
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+
+<div class="watr-shell" id="shell">
+    <aside class="watr-side" id="side" aria-label="lessons">
+        <div class="watr-side__inner">
+            <div>
+                <h2 class="watr-side__label">lessons</h2>
+                <nav class="watr-side__nav" data-lesson-nav></nav>
+            </div>
+            <div data-side-extra>
+                <h2 class="watr-side__label">practice</h2>
+                <nav class="watr-side__nav">
+                    <a href="quiz.html">final quiz</a>
+                    <a href="cheatsheet.html">cheat sheet</a>
+                </nav>
+            </div>
+            <div class="watr-side__foot">
+                <div>
+                    <div class="side-meter"><b>lessons done</b><span class="muted" data-progress-text>0 of 8</span></div>
+                    <progress class="watr-progress" data-progress value="0" max="8" aria-label="lessons done"></progress>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="watr-shell__main">
+    <div class="page">
+<ol class="watr-crumbs">
+    <li><a href="index.html">lessons</a></li>
+    <li aria-current="page">7. structs and interfaces</li>
+</ol>
+
+<h1>Structs and interfaces</h1>
+<p class="lede">Go has no classes. You group data with structs, attach functions to them as methods, and describe behaviour with interfaces.</p>
+
+<section id="structs">
+    <h2>Structs</h2>
+    <pre class="go">
+        type User struct {
+            Name  string
+            Age   int
+            admin bool   // lowercase: only this package can see it
+        }
+
+        u := User{Name: "ana", Age: 31}   // admin gets its zero value, false
+        u.Age++
+        fmt.Println(u.Name, u.Age)        // ana 32
+        fmt.Printf("%+v\n", u)           // {Name:ana Age:32 admin:false}
+    </pre>
+</section>
+
+<section id="methods">
+    <h2>Methods</h2>
+    <p>A method is a function with a <b>receiver</b>: the value it's called on, written before the name.</p>
+    <pre class="go">
+        type Counter struct{ n int }
+
+        func (c Counter) Value() int { return c.n }   // value receiver: gets a copy
+        func (c *Counter) Inc()      { c.n++ }        // pointer receiver: changes the original
+        func (c Counter) BadInc()    { c.n++ }        // changes a copy. does nothing useful
+    </pre>
+
+    <div class="toy" id="recv-toy">
+        <div class="toy__head">receivers</div>
+        <div class="toy__body">
+            <div class="toy__controls">
+                <button type="button" class="watr-btn watr-btn--small" data-m="inc" style="font-family:var(--mono)">c.Inc()</button>
+                <button type="button" class="watr-btn watr-btn--small" data-m="bad" style="font-family:var(--mono)">c.BadInc()</button>
+                <button type="button" class="watr-btn watr-btn--small watr-btn--quiet" data-m="reset">Reset</button>
+            </div>
+            <div class="frames">
+                <div class="frame">
+                    <div class="frame__name">c (in main)</div>
+                    <div class="cells" style="padding-top:18px"><span class="cell is-in" data-slot="c"><small>c.n</small>0</span></div>
+                </div>
+                <div class="frame is-empty" data-slot="frame">
+                    <div class="frame__name" data-slot="fname">(no call yet)</div>
+                    <div class="cells" style="padding-top:18px"><span class="cell" data-slot="recv"><small>receiver</small>-</span></div>
+                </div>
+            </div>
+            <p class="toy__note" aria-live="polite" data-slot="note">Call a method.</p>
+        </div>
+    </div>
+
+    <p>Rule of thumb: if any method needs a pointer receiver, give them all pointer receivers. You don't need to write <code>(&amp;c).Inc()</code>; Go takes the address for you when <code>c</code> is a variable.</p>
+</section>
+
+<section id="interfaces">
+    <h2>Interfaces</h2>
+    <p>An interface is a list of methods. Any type that has those methods <b>is</b> that interface, automatically. There's no <code>implements</code> keyword. Tick methods on and off and see which types count as a <code>Shape</code>.</p>
+    <pre class="go">
+        type Shape interface {
+            Area() float64
+            Perimeter() float64
+        }
+    </pre>
+
+    <div class="toy" id="iface-toy">
+        <div class="toy__head">does it fit?</div>
+        <div class="toy__body">
+            <div class="shape-cards" data-slot="cards"></div>
+            <pre class="go" data-slot="code"></pre>
+            <pre class="out" data-slot="out"></pre>
+            <p class="toy__note" aria-live="polite" data-slot="note"></p>
+        </div>
+    </div>
+
+    <p>This is why Go interfaces tend to be tiny. The standard library's <code>io.Reader</code> has one method, <code>Read</code>, and files, network connections, zip readers and strings all satisfy it without knowing it exists. Write functions that take small interfaces and they'll work with types you've never seen.</p>
+</section>
+
+<section id="embedding">
+    <h2>Embedding instead of inheritance</h2>
+    <pre class="go">
+        type Animal struct{ Name string }
+        func (a Animal) Hello() string { return "hi, I'm " + a.Name }
+
+        type Dog struct {
+            Animal          // embedded: no field name
+            Breed string
+        }
+
+        d := Dog{Animal{"rex"}, "corgi"}
+        fmt.Println(d.Hello())   // hi, I'm rex. Hello was promoted from Animal
+    </pre>
+    <p>A <code>Dog</code> has an <code>Animal</code> inside it and gets its methods. It isn't a subclass: you can't pass a <code>Dog</code> where an <code>Animal</code> is wanted. If you need that, use an interface.</p>
+</section>
+
+<section id="predict">
+    <h2>Predict the output</h2>
+    <div class="predict" data-answer="1" data-why=" Inc changes c through a pointer (1). BadInc gets a copy, bumps the copy to 2, and throws it away.">
+        <pre class="go">
+            var c Counter
+            c.Inc()
+            c.BadInc()
+            fmt.Println(c.Value())
+        </pre>
+    </div>
+</section>
+
+<section id="quiz">
+    <h2>Check yourself</h2>
+    <p>Get 4 of 5 right to mark this lesson done.</p>
+    <div data-quiz="types"></div>
+</section>
+
+<nav class="lesson-nav" data-lesson-steps aria-label="lessons"></nav>
+
+    </div>
+    </main>
+</div>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+<script src="js/toys/types.js"></script>
+</body>
+</html>

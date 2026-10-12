@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>hello, go · go learning</title>
+<meta name="description" content="Lesson 1: packages, func main, imports, and running your first Go program.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <button type="button" class="watr-burger" data-watr-shell="shell" aria-controls="side" aria-label="lessons"></button>
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+
+<div class="watr-shell" id="shell">
+    <aside class="watr-side" id="side" aria-label="lessons">
+        <div class="watr-side__inner">
+            <div>
+                <h2 class="watr-side__label">lessons</h2>
+                <nav class="watr-side__nav" data-lesson-nav></nav>
+            </div>
+            <div data-side-extra>
+                <h2 class="watr-side__label">practice</h2>
+                <nav class="watr-side__nav">
+                    <a href="quiz.html">final quiz</a>
+                    <a href="cheatsheet.html">cheat sheet</a>
+                </nav>
+            </div>
+            <div class="watr-side__foot">
+                <div>
+                    <div class="side-meter"><b>lessons done</b><span class="muted" data-progress-text>0 of 8</span></div>
+                    <progress class="watr-progress" data-progress value="0" max="8" aria-label="lessons done"></progress>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="watr-shell__main">
+    <div class="page">
+<ol class="watr-crumbs">
+    <li><a href="index.html">lessons</a></li>
+    <li aria-current="page">1. hello, go</li>
+</ol>
+
+<h1>Hello, Go</h1>
+<p class="lede">Go is a small, fast, compiled language from Google. It was made so big teams could write simple code that builds in seconds. This lesson gets a program running.</p>
+
+<section id="first">
+    <h2>Your first program</h2>
+    <p>Every Go file starts by saying which <b>package</b> it belongs to. A program you can run lives in <code>package main</code> and starts at <code>func main()</code>. Click each line below to see what it does.</p>
+
+    <div class="toy" id="anatomy">
+        <div class="toy__head">anatomy of a go file <span class="watr-tag">click a line</span></div>
+        <div class="toy__body">
+            <pre class="go" data-lines>
+                package main
+
+                import "fmt"
+
+                func main() {
+                    fmt.Println("hello, world")
+                }
+            </pre>
+            <p class="toy__note" aria-live="polite">Pick a line.</p>
+        </div>
+    </div>
+
+    <div class="tip">
+        <p><b>try it:</b> Install Go from <a href="https://go.dev/dl/">go.dev/dl</a>, or paste any example on this site into the <a href="https://go.dev/play/">Go Playground</a> and press Run.</p>
+    </div>
+</section>
+
+<section id="running">
+    <h2>Running it</h2>
+    <p>The <code>go</code> command does almost everything: run, build, format, test and fetch packages. Press the buttons to see what each one does in a terminal.</p>
+
+    <div class="toy" id="terminal">
+        <div class="toy__head">the go command</div>
+        <div class="toy__body">
+            <div class="toy__controls">
+                <button type="button" class="watr-btn watr-btn--small" data-cmd="init">go mod init</button>
+                <button type="button" class="watr-btn watr-btn--small" data-cmd="run">go run</button>
+                <button type="button" class="watr-btn watr-btn--small" data-cmd="build">go build</button>
+                <button type="button" class="watr-btn watr-btn--small" data-cmd="fmt">go fmt</button>
+                <button type="button" class="watr-btn watr-btn--small" data-cmd="vet">go vet</button>
+                <button type="button" class="watr-btn watr-btn--quiet watr-btn--small" data-cmd="clear">clear</button>
+            </div>
+            <pre class="term" aria-live="polite"><span class="prompt">$ </span></pre>
+            <p class="toy__note"></p>
+        </div>
+    </div>
+
+    <p>A Go project is a <b>module</b>: a folder with a <code>go.mod</code> file naming it. Make one with <code>go mod init</code> before anything else.</p>
+</section>
+
+<section id="rules">
+    <h2>Three rules that surprise people</h2>
+    <p><b>Capital letters are public.</b> A name starting with an uppercase letter (<code>Println</code>, <code>Pi</code>) can be used from other packages. Lowercase names are private to their package. There's no <code>public</code> keyword.</p>
+    <p><b>Unused things don't compile.</b> An import or local variable you never use is an error, not a warning. It keeps code tidy, and it will annoy you for about a week.</p>
+    <p><b>The formatter decides.</b> <code>go fmt</code> rewrites your code into the one standard layout. Tabs for indents, braces on the same line. Everyone's Go looks the same, which makes reading other people's code easy.</p>
+
+    <pre class="go">
+        package main
+
+        import (
+            "fmt"
+            "strings"
+        )
+
+        func main() {
+            name := "gopher"
+            fmt.Println("hello,", strings.ToUpper(name))
+            fmt.Printf("%s has %d letters\n", name, len(name))
+        }
+    </pre>
+</section>
+
+<section id="predict">
+    <h2>Predict the output</h2>
+    <p><code>Println</code> puts a space between its arguments and a newline at the end.</p>
+    <div class="predict" data-answer="gophers: 3 of 4" data-why=" Println adds a space between every argument, numbers included.">
+        <pre class="go">fmt.Println("gophers:", 3, "of", 4)</pre>
+    </div>
+</section>
+
+<section id="quiz">
+    <h2>Check yourself</h2>
+    <p>Get 4 of 5 right to mark this lesson done.</p>
+    <div data-quiz="basics"></div>
+</section>
+
+<nav class="lesson-nav" data-lesson-steps aria-label="lessons"></nav>
+
+    </div>
+    </main>
+</div>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+<script src="js/toys/basics.js"></script>
+</body>
+</html>

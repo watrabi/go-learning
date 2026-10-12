@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>final quiz · go learning</title>
+<meta name="description" content="Twelve random questions from every lesson. A new set each time.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <button type="button" class="watr-burger" data-watr-shell="shell" aria-controls="side" aria-label="lessons"></button>
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+
+<div class="watr-shell" id="shell">
+    <aside class="watr-side" id="side" aria-label="lessons">
+        <div class="watr-side__inner">
+            <div>
+                <h2 class="watr-side__label">lessons</h2>
+                <nav class="watr-side__nav" data-lesson-nav></nav>
+            </div>
+            <div data-side-extra>
+                <h2 class="watr-side__label">practice</h2>
+                <nav class="watr-side__nav">
+                    <a href="quiz.html">final quiz</a>
+                    <a href="cheatsheet.html">cheat sheet</a>
+                </nav>
+            </div>
+            <div class="watr-side__foot">
+                <div>
+                    <div class="side-meter"><b>lessons done</b><span class="muted" data-progress-text>0 of 8</span></div>
+                    <progress class="watr-progress" data-progress value="0" max="8" aria-label="lessons done"></progress>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="watr-shell__main">
+    <div class="page">
+<ol class="watr-crumbs">
+    <li><a href="index.html">lessons</a></li>
+    <li aria-current="page">final quiz</li>
+</ol>
+
+<h1>Final quiz</h1>
+<p class="lede">Twelve questions picked at random from every lesson. Press New questions at the end for a different set.</p>
+
+<div data-quiz="mixed" data-count="12" id="final"></div>
+
+<section id="result" hidden aria-live="polite"></section>
+
+    </div>
+    </main>
+</div>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+<script src="js/toys/final.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>go learning</title>
+<meta name="description" content="Learn Go with short lessons, quizzes and interactive animations: slices, pointers, interfaces, goroutines and more.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+<div class="watr-strip watr-strip--info"><p>Your progress is saved in this browser only.</p></div>
+
+<main class="page hero">
+    <div class="watr-split">
+        <div class="watr-split__aside">
+            <h1>Learn Go by poking at it.</h1>
+            <p class="lede">Eight short lessons. Each one has toys you can click, step through and break, a few "predict the output" puzzles, and a quiz at the end.</p>
+            <p>No install needed to start. When you want to run real code, use the <a href="https://go.dev/play/">Go Playground</a> or install Go from <a href="https://go.dev/dl/">go.dev/dl</a>.</p>
+            <div class="watr-row" style="flex-wrap:wrap;margin:20px 0">
+                <a class="watr-btn" href="basics.html">Start lesson 1</a>
+                <a class="watr-btn watr-btn--quiet" href="quiz.html">Take the final quiz</a>
+                <a class="watr-btn watr-btn--quiet" href="cheatsheet.html">Cheat sheet</a>
+            </div>
+            <blockquote class="watr-quote">
+                <p>&ldquo;if err != nil&rdquo; isn't boilerplate, it's a breathing exercise.</p>
+                <cite>sword 2026</cite>
+            </blockquote>
+        </div>
+        <div class="watr-split__main">
+            <h2>Lessons</h2>
+            <ol class="path" data-path></ol>
+        </div>
+    </div>
+
+    <section id="what">
+        <h2>What's in here</h2>
+        <div class="toy__grid">
+            <div class="watr-panel">
+                <h3 style="margin-top:0">Toys</h3>
+                <p>Step through a <code>for</code> loop line by line. Watch <code>append</code> run out of room and copy a slice to a bigger array. Follow a pointer's arrow. Fill a channel until senders get stuck.</p>
+            </div>
+            <div>
+                <h3 style="margin-top:0">Quizzes</h3>
+                <p>Every lesson ends with a few questions, and each answer says why. Pass one and the lesson is ticked off. The final quiz pulls a fresh mix from all of them.</p>
+                <h3>Predict the output</h3>
+                <p>Small snippets where you type what you think gets printed. The best way to find out what you actually understand.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+</body>
+</html>

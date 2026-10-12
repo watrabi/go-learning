@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>cheat sheet · go learning</title>
+<meta name="description" content="Go syntax on one page. Filter it, sort it, keep it open in a tab.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <button type="button" class="watr-burger" data-watr-shell="shell" aria-controls="side" aria-label="lessons"></button>
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+
+<div class="watr-shell" id="shell">
+    <aside class="watr-side" id="side" aria-label="lessons">
+        <div class="watr-side__inner">
+            <div>
+                <h2 class="watr-side__label">lessons</h2>
+                <nav class="watr-side__nav" data-lesson-nav></nav>
+            </div>
+            <div data-side-extra>
+                <h2 class="watr-side__label">practice</h2>
+                <nav class="watr-side__nav">
+                    <a href="quiz.html">final quiz</a>
+                    <a href="cheatsheet.html">cheat sheet</a>
+                </nav>
+            </div>
+            <div class="watr-side__foot">
+                <div>
+                    <div class="side-meter"><b>lessons done</b><span class="muted" data-progress-text>0 of 8</span></div>
+                    <progress class="watr-progress" data-progress value="0" max="8" aria-label="lessons done"></progress>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="watr-shell__main">
+    <div class="page">
+<ol class="watr-crumbs">
+    <li><a href="index.html">lessons</a></li>
+    <li aria-current="page">cheat sheet</li>
+</ol>
+
+<h1>Cheat sheet</h1>
+<p class="lede">The syntax from every lesson on one page. Type to filter, click a column header to sort.</p>
+
+<input type="search" class="sheet-filter" id="sheet-filter" placeholder="filter: try slice, error, chan" aria-label="filter the cheat sheet">
+
+<div class="watr-table-wrap">
+    <table class="watr-table watr-table--stack" id="sheet">
+        <thead>
+            <tr><th><button type="button">topic</button></th><th>code</th><th>what it does</th></tr>
+        </thead>
+        <tbody>
+            <tr><td class="is-main">program</td><td><code>package main</code> + <code>func main() {}</code></td><td>the entry point of a runnable program</td></tr>
+            <tr><td class="is-main">program</td><td><code>import "fmt"</code></td><td>use a package. unused imports don't compile</td></tr>
+            <tr><td class="is-main">tooling</td><td><code>go mod init example.com/app</code></td><td>start a module (a project)</td></tr>
+            <tr><td class="is-main">tooling</td><td><code>go run .</code></td><td>compile and run</td></tr>
+            <tr><td class="is-main">tooling</td><td><code>go build</code></td><td>make a binary</td></tr>
+            <tr><td class="is-main">tooling</td><td><code>go test ./...</code></td><td>run every test. add <code>-race</code> to find data races</td></tr>
+            <tr><td class="is-main">tooling</td><td><code>go fmt ./...</code></td><td>format everything</td></tr>
+            <tr><td class="is-main">tooling</td><td><code>go get example.com/pkg</code></td><td>add a dependency</td></tr>
+            <tr><td class="is-main">variables</td><td><code>var x int</code></td><td>declare with the zero value</td></tr>
+            <tr><td class="is-main">variables</td><td><code>x := 5</code></td><td>declare and infer the type (inside functions)</td></tr>
+            <tr><td class="is-main">variables</td><td><code>const Pi = 3.14</code></td><td>compile-time constant</td></tr>
+            <tr><td class="is-main">variables</td><td><code>float64(n)</code></td><td>convert. Go never does it for you</td></tr>
+            <tr><td class="is-main">control</td><td><code>if v, err := f(); err != nil {}</code></td><td>if with a short statement</td></tr>
+            <tr><td class="is-main">control</td><td><code>for i := 0; i &lt; n; i++ {}</code></td><td>classic loop</td></tr>
+            <tr><td class="is-main">control</td><td><code>for cond {}</code></td><td>while loop</td></tr>
+            <tr><td class="is-main">control</td><td><code>for i, v := range s {}</code></td><td>loop over a slice, map, string or channel</td></tr>
+            <tr><td class="is-main">control</td><td><code>switch x { case 1, 2: }</code></td><td>no fall-through by default</td></tr>
+            <tr><td class="is-main">functions</td><td><code>func f(a, b int) (int, error)</code></td><td>several parameters and results</td></tr>
+            <tr><td class="is-main">functions</td><td><code>defer f.Close()</code></td><td>run when the function returns, last in first out</td></tr>
+            <tr><td class="is-main">functions</td><td><code>func(x int) int { return x * 2 }</code></td><td>a function literal (closure)</td></tr>
+            <tr><td class="is-main">errors</td><td><code>if err != nil { return err }</code></td><td>the error check</td></tr>
+            <tr><td class="is-main">errors</td><td><code>errors.New("bad input")</code></td><td>make an error</td></tr>
+            <tr><td class="is-main">errors</td><td><code>fmt.Errorf("load: %w", err)</code></td><td>wrap an error with context</td></tr>
+            <tr><td class="is-main">errors</td><td><code>errors.Is(err, os.ErrNotExist)</code></td><td>check what's inside a wrapped error</td></tr>
+            <tr><td class="is-main">slices</td><td><code>s := []int{1, 2, 3}</code></td><td>slice literal</td></tr>
+            <tr><td class="is-main">slices</td><td><code>make([]int, 0, 10)</code></td><td>length 0, capacity 10</td></tr>
+            <tr><td class="is-main">slices</td><td><code>s = append(s, 4)</code></td><td>add to the end. always assign the result</td></tr>
+            <tr><td class="is-main">slices</td><td><code>s[1:3]</code></td><td>items 1 and 2, sharing the same array</td></tr>
+            <tr><td class="is-main">slices</td><td><code>len(s)</code>, <code>cap(s)</code></td><td>length and capacity</td></tr>
+            <tr><td class="is-main">slices</td><td><code>slices.Sort(s)</code></td><td>sort in place (package slices)</td></tr>
+            <tr><td class="is-main">maps</td><td><code>m := map[string]int{}</code></td><td>empty map, ready to use</td></tr>
+            <tr><td class="is-main">maps</td><td><code>v, ok := m["k"]</code></td><td>look up, and find out if it was there</td></tr>
+            <tr><td class="is-main">maps</td><td><code>delete(m, "k")</code></td><td>remove a key</td></tr>
+            <tr><td class="is-main">pointers</td><td><code>p := &amp;x</code></td><td>address of x</td></tr>
+            <tr><td class="is-main">pointers</td><td><code>*p = 10</code></td><td>write through a pointer</td></tr>
+            <tr><td class="is-main">types</td><td><code>type User struct { Name string }</code></td><td>define a struct</td></tr>
+            <tr><td class="is-main">types</td><td><code>func (u *User) Rename(n string)</code></td><td>method with a pointer receiver</td></tr>
+            <tr><td class="is-main">types</td><td><code>type Shape interface { Area() float64 }</code></td><td>interface. satisfied automatically</td></tr>
+            <tr><td class="is-main">types</td><td><code>v, ok := x.(string)</code></td><td>type assertion: is this interface value a string?</td></tr>
+            <tr><td class="is-main">concurrency</td><td><code>go f()</code></td><td>start a goroutine</td></tr>
+            <tr><td class="is-main">concurrency</td><td><code>ch := make(chan int, 3)</code></td><td>channel with a buffer of 3</td></tr>
+            <tr><td class="is-main">concurrency</td><td><code>ch &lt;- v</code> / <code>v := &lt;-ch</code></td><td>send / receive</td></tr>
+            <tr><td class="is-main">concurrency</td><td><code>close(ch)</code></td><td>no more values. range over ch stops</td></tr>
+            <tr><td class="is-main">concurrency</td><td><code>select { case v := &lt;-ch: }</code></td><td>wait on several channels</td></tr>
+            <tr><td class="is-main">concurrency</td><td><code>wg.Add(1)</code> / <code>wg.Done()</code> / <code>wg.Wait()</code></td><td>wait for goroutines (sync.WaitGroup)</td></tr>
+            <tr><td class="is-main">concurrency</td><td><code>mu.Lock()</code> / <code>defer mu.Unlock()</code></td><td>protect shared data (sync.Mutex)</td></tr>
+            <tr><td class="is-main">printing</td><td><code>fmt.Printf("%v %+v %T %q\n", ...)</code></td><td>value, value with field names, type, quoted string</td></tr>
+        </tbody>
+    </table>
+</div>
+<p class="muted" id="sheet-empty" hidden>Nothing matches that. Try a shorter word.</p>
+
+    </div>
+    </main>
+</div>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+<script src="js/toys/sheet.js"></script>
+</body>
+</html>

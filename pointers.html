@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>pointers · go learning</title>
+<meta name="description" content="Lesson 6: addresses, & and *, nil, and why Go passes copies, with a live memory diagram.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <button type="button" class="watr-burger" data-watr-shell="shell" aria-controls="side" aria-label="lessons"></button>
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+
+<div class="watr-shell" id="shell">
+    <aside class="watr-side" id="side" aria-label="lessons">
+        <div class="watr-side__inner">
+            <div>
+                <h2 class="watr-side__label">lessons</h2>
+                <nav class="watr-side__nav" data-lesson-nav></nav>
+            </div>
+            <div data-side-extra>
+                <h2 class="watr-side__label">practice</h2>
+                <nav class="watr-side__nav">
+                    <a href="quiz.html">final quiz</a>
+                    <a href="cheatsheet.html">cheat sheet</a>
+                </nav>
+            </div>
+            <div class="watr-side__foot">
+                <div>
+                    <div class="side-meter"><b>lessons done</b><span class="muted" data-progress-text>0 of 8</span></div>
+                    <progress class="watr-progress" data-progress value="0" max="8" aria-label="lessons done"></progress>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="watr-shell__main">
+    <div class="page">
+<ol class="watr-crumbs">
+    <li><a href="index.html">lessons</a></li>
+    <li aria-current="page">6. pointers</li>
+</ol>
+
+<h1>Pointers</h1>
+<p class="lede">A pointer holds the address of a value instead of the value itself. Go's pointers are the friendly kind: no arithmetic, and memory is cleaned up for you.</p>
+
+<section id="basics">
+    <h2>&amp; and *</h2>
+    <ul>
+        <li><code>&amp;x</code> means "the address of x". If <code>x</code> is an <code>int</code>, <code>&amp;x</code> is an <code>*int</code>.</li>
+        <li><code>*p</code> means "the value p points at". You can read it or write to it.</li>
+    </ul>
+    <p>Run the lines and watch memory. Each box is a variable, with its (made up) address above it.</p>
+
+    <div class="toy" id="mem-toy">
+        <div class="toy__head">memory diagram</div>
+        <div class="toy__body">
+            <div class="toy__controls" data-slot="ops"></div>
+            <div class="mem" data-slot="mem">
+                <svg class="mem__arrows" data-slot="svg" aria-hidden="true"></svg>
+                <div class="mem__vars" data-slot="vars"></div>
+            </div>
+            <div class="toy__grid">
+                <pre class="out" data-slot="log" aria-label="code you ran"></pre>
+                <pre class="out" data-slot="out" aria-label="output"></pre>
+            </div>
+            <p class="toy__note" aria-live="polite" data-slot="note"></p>
+        </div>
+    </div>
+</section>
+
+<section id="copies">
+    <h2>Go passes copies</h2>
+    <p>When you call a function, it gets a <b>copy</b> of each argument. Change the copy and the caller never sees it. Pass a pointer when the function should change the caller's variable.</p>
+    <pre class="go">
+        func double(n int)     { n = n * 2 }
+        func doublePtr(n *int) { *n = *n * 2 }
+    </pre>
+
+    <div class="toy" id="call-toy">
+        <div class="toy__head">copy or pointer?</div>
+        <div class="toy__body">
+            <div class="toy__controls">
+                <button type="button" class="watr-btn watr-btn--small" data-call="value" style="font-family:var(--mono)">double(score)</button>
+                <button type="button" class="watr-btn watr-btn--small" data-call="ptr" style="font-family:var(--mono)">doublePtr(&amp;score)</button>
+                <button type="button" class="watr-btn watr-btn--small watr-btn--quiet" data-call="reset">Reset</button>
+            </div>
+            <div class="frames">
+                <div class="frame">
+                    <div class="frame__name">main</div>
+                    <div class="cells" style="padding-top:18px"><span class="cell is-in" data-slot="score"><small>score · 0xc0a0</small>5</span></div>
+                </div>
+                <div class="frame is-empty" data-slot="frame">
+                    <div class="frame__name" data-slot="fname">(no call yet)</div>
+                    <div class="cells" style="padding-top:18px"><span class="cell" data-slot="n"><small>n</small>-</span></div>
+                </div>
+            </div>
+            <p class="toy__note" aria-live="polite" data-slot="note">Call one of them.</p>
+        </div>
+    </div>
+
+    <p>Big structs are also often passed by pointer just to skip the copy. Slices and maps already contain a pointer inside, so passing them is cheap, and a function can change their elements.</p>
+</section>
+
+<section id="new">
+    <h2>Making pointers</h2>
+    <pre class="go">
+        p := new(int)          // a pointer to a fresh zero int
+        u := &amp;User{Name: "bo"} // the usual way: address of a struct literal
+
+        func newUser(name string) *User {
+            u := User{Name: name}
+            return &amp;u          // totally fine in Go. u lives on after the function returns
+        }
+    </pre>
+    <div class="tip">
+        <p><b>nil:</b> A pointer's zero value is <code>nil</code>. Following a nil pointer (<code>*p</code> or <code>p.Name</code>) panics with "invalid memory address or nil pointer dereference". You'll meet this error. Everyone does.</p>
+    </div>
+</section>
+
+<section id="predict">
+    <h2>Predict the output</h2>
+    <div class="predict" data-answer="2 3" data-why=" a is a copy of x, so a++ doesn't touch x. p points at x, so *p++ does.">
+        <pre class="go">
+            x := 1
+            a := x
+            p := &amp;x
+            a++
+            *p++
+            *p++
+            fmt.Println(a, x)
+        </pre>
+    </div>
+</section>
+
+<section id="quiz">
+    <h2>Check yourself</h2>
+    <p>Get 4 of 5 right to mark this lesson done.</p>
+    <div data-quiz="pointers"></div>
+</section>
+
+<nav class="lesson-nav" data-lesson-steps aria-label="lessons"></nav>
+
+    </div>
+    </main>
+</div>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+<script src="js/toys/pointers.js"></script>
+</body>
+</html>

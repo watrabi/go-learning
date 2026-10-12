@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>functions and errors · go learning</title>
+<meta name="description" content="Lesson 4: functions, multiple return values, errors as values, defer and closures.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <button type="button" class="watr-burger" data-watr-shell="shell" aria-controls="side" aria-label="lessons"></button>
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+
+<div class="watr-shell" id="shell">
+    <aside class="watr-side" id="side" aria-label="lessons">
+        <div class="watr-side__inner">
+            <div>
+                <h2 class="watr-side__label">lessons</h2>
+                <nav class="watr-side__nav" data-lesson-nav></nav>
+            </div>
+            <div data-side-extra>
+                <h2 class="watr-side__label">practice</h2>
+                <nav class="watr-side__nav">
+                    <a href="quiz.html">final quiz</a>
+                    <a href="cheatsheet.html">cheat sheet</a>
+                </nav>
+            </div>
+            <div class="watr-side__foot">
+                <div>
+                    <div class="side-meter"><b>lessons done</b><span class="muted" data-progress-text>0 of 8</span></div>
+                    <progress class="watr-progress" data-progress value="0" max="8" aria-label="lessons done"></progress>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="watr-shell__main">
+    <div class="page">
+<ol class="watr-crumbs">
+    <li><a href="index.html">lessons</a></li>
+    <li aria-current="page">4. functions and errors</li>
+</ol>
+
+<h1>Functions and errors</h1>
+<p class="lede">Go functions can return more than one value, and that's how errors work: there are no exceptions, just a second return value you check.</p>
+
+<section id="funcs">
+    <h2>Writing functions</h2>
+    <pre class="go">
+        func add(a int, b int) int {
+            return a + b
+        }
+
+        func swap(a, b string) (string, string) {  // same type? write it once
+            return b, a
+        }
+
+        x, y := swap("left", "right")   // y is "left"
+    </pre>
+    <p>Types go <b>after</b> names. The return type goes after the brackets, and several return types go in their own brackets.</p>
+</section>
+
+<section id="errors">
+    <h2>Errors are values</h2>
+    <p>A function that can fail returns an <code>error</code> as its last value. <code>nil</code> means it worked. You check it straight away, every time. Pick some numbers and call <code>div</code>.</p>
+
+    <div class="toy" id="err-toy">
+        <div class="toy__head">follow the error</div>
+        <div class="toy__body">
+            <form class="toy__controls">
+                <label for="err-a">a</label><input type="number" id="err-a" value="10">
+                <label for="err-b">b</label><input type="number" id="err-b" value="0">
+                <button class="watr-btn watr-btn--small">Call div(a, b)</button>
+            </form>
+            <div class="toy__grid">
+                <pre class="go" data-lines>
+                    func div(a, b int) (int, error) {
+                        if b == 0 {
+                            return 0, errors.New("can't divide by zero")
+                        }
+                        return a / b, nil
+                    }
+
+                    func main() {
+                        q, err := div(a, b)
+                        if err != nil {
+                            fmt.Println("error:", err)
+                            return
+                        }
+                        fmt.Println("result:", q)
+                    }
+                </pre>
+                <div class="watr-stack" style="gap:12px">
+                    <dl class="var-table"><dt>q</dt><dd data-slot="q">-</dd><dt>err</dt><dd data-slot="err">-</dd></dl>
+                    <pre class="out" data-slot="out"></pre>
+                </div>
+            </div>
+            <p class="toy__note" aria-live="polite" data-slot="note">Press Call. Try b = 0 and then something else.</p>
+        </div>
+    </div>
+
+    <p>It's more typing than <code>try</code>/<code>catch</code>, but you can always see where things can fail. Add context as an error travels up with <code>fmt.Errorf</code> and <code>%w</code>:</p>
+    <pre class="go">
+        data, err := os.ReadFile(path)
+        if err != nil {
+            return fmt.Errorf("loading config: %w", err)
+        }
+    </pre>
+    <div class="tip">
+        <p><b>panic is for bugs:</b> <code>panic</code> exists, but it's for "this should never happen", like indexing past the end of a slice. Things that can normally go wrong (missing file, bad input) return an error.</p>
+    </div>
+</section>
+
+<section id="defer">
+    <h2>defer</h2>
+    <p><code>defer</code> schedules a call to run when the surrounding function returns. It's how you make sure cleanup happens: open a file, then <code>defer f.Close()</code> on the next line. Deferred calls go onto a stack, so the <b>last one deferred runs first</b>.</p>
+
+    <div class="toy" id="defer-toy">
+        <div class="toy__head">the defer stack <span class="watr-tag" data-slot="phase">ready</span></div>
+        <div class="toy__body">
+            <div class="toy__controls">
+                <button type="button" class="watr-btn watr-btn--small" data-act="step">Step</button>
+                <button type="button" class="watr-btn watr-btn--small" data-act="play">Play</button>
+                <button type="button" class="watr-btn watr-btn--quiet watr-btn--small" data-act="reset">Reset</button>
+            </div>
+            <div class="toy__grid">
+                <pre class="go" data-lines>
+                    func main() {
+                        defer fmt.Println("one")
+                        defer fmt.Println("two")
+                        fmt.Println("working")
+                        defer fmt.Println("three")
+                        fmt.Println("returning")
+                    }
+                </pre>
+                <div class="watr-stack" style="gap:12px">
+                    <div>
+                        <b style="font-size:.85rem">defer stack</b>
+                        <div class="defer-stack" data-slot="stack"></div>
+                    </div>
+                    <pre class="out" data-slot="out"></pre>
+                </div>
+            </div>
+            <p class="toy__note" aria-live="polite" data-slot="note">Press Step.</p>
+        </div>
+    </div>
+</section>
+
+<section id="closures">
+    <h2>Functions are values</h2>
+    <p>You can store a function in a variable, pass it around, and return it. A function made inside another one remembers the variables around it. That's a <b>closure</b>.</p>
+    <pre class="go">
+        func counter() func() int {
+            n := 0
+            return func() int {
+                n++
+                return n
+            }
+        }
+    </pre>
+</section>
+
+<section id="predict">
+    <h2>Predict the output</h2>
+    <div class="predict" data-answer="3" data-why=" Every call to f bumps the same n, which lives on inside the closure.">
+        <pre class="go">
+            f := counter()
+            f()
+            f()
+            fmt.Println(f())
+        </pre>
+    </div>
+</section>
+
+<section id="quiz">
+    <h2>Check yourself</h2>
+    <p>Get 4 of 5 right to mark this lesson done.</p>
+    <div data-quiz="functions"></div>
+</section>
+
+<nav class="lesson-nav" data-lesson-steps aria-label="lessons"></nav>
+
+    </div>
+    </main>
+</div>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+<script src="js/toys/functions.js"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>slices and maps · go learning</title>
+<meta name="description" content="Lesson 5: arrays, slices, append, length and capacity, and maps, with a live slice visualizer.">
+<link rel="icon" href="kit/assets/WatrLabsIcon.png">
+<link rel="stylesheet" href="kit/watr.css">
+<link rel="stylesheet" href="css/site.css">
+<script>try { var t = JSON.parse(localStorage.getItem("golearn:theme")); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<nav class="watr-bar" aria-label="site">
+    <button type="button" class="watr-burger" data-watr-shell="shell" aria-controls="side" aria-label="lessons"></button>
+    <a href="index.html" class="watr-bar__home">go learning</a>
+    <button type="button" class="watr-bar__toggle">menu</button>
+    <div class="watr-bar__links">
+        <div class="watr-bar__group">
+            <a href="index.html">home</a>
+            <a href="basics.html">lessons</a>
+            <a href="quiz.html">final quiz</a>
+            <a href="cheatsheet.html">cheat sheet</a>
+        </div>
+        <div class="watr-bar__group">
+            <button type="button" class="theme-btn" data-theme-toggle>dark</button>
+        </div>
+    </div>
+</nav>
+
+<div class="watr-shell" id="shell">
+    <aside class="watr-side" id="side" aria-label="lessons">
+        <div class="watr-side__inner">
+            <div>
+                <h2 class="watr-side__label">lessons</h2>
+                <nav class="watr-side__nav" data-lesson-nav></nav>
+            </div>
+            <div data-side-extra>
+                <h2 class="watr-side__label">practice</h2>
+                <nav class="watr-side__nav">
+                    <a href="quiz.html">final quiz</a>
+                    <a href="cheatsheet.html">cheat sheet</a>
+                </nav>
+            </div>
+            <div class="watr-side__foot">
+                <div>
+                    <div class="side-meter"><b>lessons done</b><span class="muted" data-progress-text>0 of 8</span></div>
+                    <progress class="watr-progress" data-progress value="0" max="8" aria-label="lessons done"></progress>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="watr-shell__main">
+    <div class="page">
+<ol class="watr-crumbs">
+    <li><a href="index.html">lessons</a></li>
+    <li aria-current="page">5. slices and maps</li>
+</ol>
+
+<h1>Slices and maps</h1>
+<p class="lede">Slices are the list type you'll use every day. They're simple to use and a little surprising underneath, so this lesson opens one up.</p>
+
+<section id="arrays">
+    <h2>Arrays, then slices</h2>
+    <p>An <b>array</b> has a fixed length that's part of its type. <code>[3]int</code> and <code>[4]int</code> are different types. You rarely use them directly.</p>
+    <p>A <b>slice</b> is a small window onto an array. It holds three things: a pointer to where the window starts, its <b>length</b> (how many items you can see) and its <b>capacity</b> (how far the array goes past the start).</p>
+    <pre class="go">
+        a := [3]int{1, 2, 3}      // array
+        s := []int{1, 2, 3}       // slice (Go makes the array for you)
+        s = append(s, 4)          // slices grow
+        fmt.Println(len(s), s[0], s[1:3])
+    </pre>
+</section>
+
+<section id="viz">
+    <h2>Look inside a slice</h2>
+    <p>Run the lines on the left and watch the arrays underneath. Bright squares are what <code>s</code> can see, plain ones are spare capacity, and the dark bar marks what <code>t</code> can see.</p>
+
+    <div class="toy" id="slice-toy">
+        <div class="toy__head">slice visualizer</div>
+        <div class="toy__body">
+            <div class="toy__controls" data-slot="ops"></div>
+            <div data-slot="arrays" class="arrays" aria-live="polite"></div>
+            <div class="toy__grid">
+                <dl class="var-table" data-slot="headers"></dl>
+                <pre class="out" data-slot="log" aria-label="code you ran"></pre>
+            </div>
+            <p class="toy__note" aria-live="polite" data-slot="note"></p>
+        </div>
+    </div>
+
+    <p>Two things to take away:</p>
+    <ul>
+        <li><b>Always write <code>s = append(s, x)</code>.</b> When the array is full, append makes a new, bigger one (roughly double) and copies everything across. The old <code>s</code> would still point at the old array.</li>
+        <li><b>Slices of the same array share memory.</b> <code>t := s[:2]</code> doesn't copy anything. Change <code>t[0]</code> and <code>s[0]</code> changes too. Use <code>slices.Clone</code> or <code>copy</code> when you want an independent copy.</li>
+    </ul>
+    <div class="tip">
+        <p><b>make:</b> If you know roughly how big a slice will get, <code>make([]int, 0, 100)</code> gives it length 0 and room for 100, so append never has to copy.</p>
+    </div>
+</section>
+
+<section id="maps">
+    <h2>Maps</h2>
+    <p>A <b>map</b> stores values by key, like a dictionary or hash table in other languages.</p>
+    <pre class="go">
+        ages := map[string]int{"ana": 31, "bo": 25}
+        ages["cy"] = 40            // add or overwrite
+        delete(ages, "bo")         // remove
+        age, ok := ages["dee"]     // ok is false: "dee" isn't there, age is 0
+    </pre>
+
+    <div class="toy" id="map-toy">
+        <div class="toy__head">map playground</div>
+        <div class="toy__body">
+            <form class="toy__controls">
+                <label for="map-key">key</label><input id="map-key" value="dee" style="width:7rem" autocomplete="off">
+                <label for="map-val">value</label><input id="map-val" type="number" value="28">
+                <button type="submit" class="watr-btn watr-btn--small" data-act="set">m[key] = value</button>
+                <button type="button" class="watr-btn watr-btn--small" data-act="get">v, ok := m[key]</button>
+                <button type="button" class="watr-btn watr-btn--small" data-act="del">delete(m, key)</button>
+                <button type="button" class="watr-btn watr-btn--small watr-btn--quiet" data-act="range">for k, v := range m</button>
+            </form>
+            <div class="toy__grid">
+                <div class="watr-table-wrap">
+                    <table class="watr-table watr-table--compact"><thead><tr><th>key</th><th class="num">value</th></tr></thead><tbody data-slot="rows"></tbody></table>
+                </div>
+                <pre class="out" data-slot="out"></pre>
+            </div>
+            <p class="toy__note" aria-live="polite" data-slot="note">Try range a few times and watch the order.</p>
+        </div>
+    </div>
+
+    <p>Reading a key that isn't there gives the zero value, not an error. Use the <code>v, ok</code> form when you need to know the difference.</p>
+</section>
+
+<section id="predict">
+    <h2>Predict the output</h2>
+    <div class="predict" data-answer="[9 2 3] 2 3" data-also="[9 2 3]2 3" data-why=" t shares s's array, so t[0] = 9 changes s too. t has length 2 but capacity 3, because the array carries on past t's end.">
+        <pre class="go">
+            s := []int{1, 2, 3}
+            t := s[:2]
+            t[0] = 9
+            fmt.Println(s, len(t), cap(t))
+        </pre>
+    </div>
+</section>
+
+<section id="quiz">
+    <h2>Check yourself</h2>
+    <p>Get 5 of 6 right to mark this lesson done.</p>
+    <div data-quiz="collections"></div>
+</section>
+
+<nav class="lesson-nav" data-lesson-steps aria-label="lessons"></nav>
+
+    </div>
+    </main>
+</div>
+
+<footer class="watr-footer"><p>go learning · made with the <a href="https://github.com/WatrLabs/watr-style">watr style</a> · try code for real at <a href="https://go.dev/play/">go.dev/play</a></p></footer>
+
+<script src="kit/watr.js"></script>
+<script src="js/quizzes.js"></script>
+<script src="js/site.js"></script>
+<script src="js/toys/collections.js"></script>
+</body>
+</html>
